@@ -5,14 +5,22 @@ import type { CorpusNote } from "./dataset";
 // map each care-note event into a CorpusNote so the LLM and the evidence
 // panel treat live notes identically to fixture notes.
 //
-// SSRF guard: only localhost/loopback hosts are allowed. This is a dev-only
-// hook; production would replace it with a typed RPC into the real event store.
+// SSRF guard: by default only loopback hosts are allowed. Set
+// EVENTS_URL_ALLOWED_HOSTS (comma-separated) to extend the allow-list — e.g.
+// the PHP-Demo Vercel host when this app runs behind a separate deployment.
+// Read at request time so an env-var update on Vercel takes effect without
+// a redeploy of this module.
 
-const ALLOWED_HOSTS = new Set([
-  "localhost",
-  "127.0.0.1",
-  "[::1]",
-]);
+const LOOPBACK_HOSTS = ["localhost", "127.0.0.1", "[::1]"] as const;
+
+function allowedHosts(): Set<string> {
+  const raw = process.env.EVENTS_URL_ALLOWED_HOSTS ?? "";
+  const extras = raw
+    .split(",")
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean);
+  return new Set<string>([...LOOPBACK_HOSTS, ...extras]);
+}
 
 type RawEvent = {
   eventId: string;
@@ -25,7 +33,7 @@ export function isAllowedEventsUrl(url: string): boolean {
   try {
     const u = new URL(url);
     if (u.protocol !== "http:" && u.protocol !== "https:") return false;
-    return ALLOWED_HOSTS.has(u.hostname);
+    return allowedHosts().has(u.hostname.toLowerCase());
   } catch {
     return false;
   }
@@ -68,7 +76,7 @@ export async function fetchLiveNotes(
 ): Promise<CorpusNote[]> {
   if (!isAllowedEventsUrl(eventsUrl)) {
     throw new Error(
-      `eventsUrl host not allowed (loopback only): ${eventsUrl}`,
+      `eventsUrl host not allowed. Loopback is always permitted; add the host to EVENTS_URL_ALLOWED_HOSTS to authorise it. Got: ${eventsUrl}`,
     );
   }
   const res = await fetch(eventsUrl, {
