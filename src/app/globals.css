@@ -1,26 +1,87 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ----------------------------------------------------------------------
+ * People Helping People — Brand tokens (v0.2)
+ *
+ * Sage is the brand colour. Bark, walnut, stone are the neutral ladder.
+ * Cream is the background, white lifts above it. No black anywhere.
+ * Alegreya for headings + the human voice (in sage italic). DM Sans for body.
+ * -------------------------------------------------------------------- */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* Brand palette */
+  --color-sage: #7a9a7e;
+  --color-sage-tint: #c2d4c5;
+  --color-bark: #4a443d;
+  --color-walnut: #5c554d;
+  --color-stone: #958e85;
+  --color-pampas: #eae6df;
+  --color-cream: #f4f2ed;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Data / status palette */
+  --color-warm-rose: #b5807a;
+  --color-rose-tint: #dbbfbb;
+  --color-muted-gold: #bfa36d;
+  --color-soft-slate: #8a91a0;
+  --color-alert: #b85c5c;
+
+  /* Surfaces */
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-walnut);
+
+  /* Font stacks (variables come from next/font in layout.tsx) */
+  --font-display: var(--font-alegreya), Georgia, serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "ss02";
+}
+
+/* Headings always use Alegreya */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--color-bark);
+  font-weight: 500;
+}
+
+/* The "human voice" treatment: italic sage. Use selectively. */
+.voice {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-sage);
+}
+
+/* Subtle card lift — only this shadow is allowed by the brand kit. */
+.card-lift {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Prose tuning so the refreshed care plan reads like a document, not a UI dump */
+.prose {
+  --tw-prose-body: var(--color-walnut);
+  --tw-prose-headings: var(--color-bark);
+  --tw-prose-lead: var(--color-walnut);
+  --tw-prose-links: var(--color-sage);
+  --tw-prose-bold: var(--color-bark);
+  --tw-prose-counters: var(--color-stone);
+  --tw-prose-bullets: var(--color-stone);
+  --tw-prose-hr: var(--color-pampas);
+  --tw-prose-quotes: var(--color-bark);
+  --tw-prose-quote-borders: var(--color-sage);
+  --tw-prose-captions: var(--color-stone);
+  --tw-prose-th-borders: var(--color-pampas);
+  --tw-prose-td-borders: var(--color-pampas);
+  font-family: var(--font-sans);
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-family: var(--font-display);
+}
+.prose em {
+  color: var(--color-sage);
+  font-style: italic;
 }
